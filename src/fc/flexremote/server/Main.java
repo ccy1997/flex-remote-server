@@ -14,7 +14,7 @@ public class Main extends Application {
     view.getStage().show();
     controller.setView(view);
     Thread serverThread =
-        new Thread(new Server(controller.getLocalIP(), controller.getServerSocket(), controller));
+        new Thread(new Server(controller.getLocalIPs(), controller.getServerSocket(), controller));
     serverThread.setDaemon(true);
     serverThread.start();
   }

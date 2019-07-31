@@ -4,17 +4,18 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
+
 import javafx.application.Platform;
 
 public class Server implements Runnable {
-  private String localIP;
+  private ArrayList<String> localIPs;
   private ServerSocket server;
   private Controller controller;
   private boolean run;
 
-  public Server(String localIP, ServerSocket server, Controller controller) {
-
-    this.localIP = localIP;
+  public Server(ArrayList<String> localIP, ServerSocket server, Controller controller) {
+    this.localIPs = localIP;
     this.server = server;
     this.controller = controller;
     run = true;
@@ -26,7 +27,13 @@ public class Server implements Runnable {
     Platform.runLater(new Runnable() {
       @Override
       public void run() {
-        controller.setLocalIPLabel("Local IP of this PC: " + localIP);
+    	String localIPsLabelText = "Local IP(s) of this PC:\n";
+    	
+    	for (String localIP : localIPs) {
+    		localIPsLabelText += localIP + "\n";
+    	}
+    	
+        controller.setLocalIPsLabel(localIPsLabelText);
       }
     });
     controller.generateLogViewText("Remote server ready for connection.");

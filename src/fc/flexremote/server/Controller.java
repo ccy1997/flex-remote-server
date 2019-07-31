@@ -6,6 +6,7 @@ import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.ServerSocket;
 import java.net.SocketException;
+import java.util.ArrayList;
 import java.util.Enumeration;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
@@ -13,19 +14,19 @@ import javafx.scene.control.Alert.AlertType;
 
 public class Controller {
   private View view;
-  private String localIP;
+  private ArrayList<String> localIPs;
   private ServerSocket server;
 
   public void setView(View v) {
     view = v;
   }
 
-  public void setLocalIPLabel(String ip) {
+  public void setLocalIPsLabel(String ip) {
     view.getLocalIPLabel().setText(ip);
   }
 
-  public String getLocalIP() {
-    return localIP;
+  public ArrayList<String> getLocalIPs() {
+    return localIPs;
   }
 
   public ServerSocket getServerSocket() {
@@ -41,12 +42,12 @@ public class Controller {
   }
 
   public void exitOnNoNetworkConnection() {
-    if (!isPcConnectedToAnyNetwork()) {
+	localIPs = getAppropriateLocalIPs(); 
+	  
+    if (localIPs.isEmpty()) { // No network connection
       Alert alert = new Alert(AlertType.NONE, "No network connection", ButtonType.OK);
       alert.showAndWait();
       System.exit(0);
-    } else {
-      localIP = getAppropriateLocalIP();
     }
   }
 
@@ -60,16 +61,9 @@ public class Controller {
     }
   }
 
-  private boolean isPcConnectedToAnyNetwork() {
-    String localIP = getAppropriateLocalIP();
-
-    if (localIP == null)
-      return false;
-
-    return true;
-  }
-
-  private String getAppropriateLocalIP() {
+  private ArrayList<String> getAppropriateLocalIPs() {
+    ArrayList<String> appropirateLocalIPs = new ArrayList<>();  
+	  
     try {
       Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();
 
@@ -93,7 +87,7 @@ public class Controller {
           if (addr.isLoopbackAddress())
             continue;
 
-          return addr.getHostAddress();
+          appropirateLocalIPs.add(addr.getHostAddress());
 
         }
       }
@@ -101,7 +95,7 @@ public class Controller {
       se.printStackTrace();
     }
 
-    return null;
+    return appropirateLocalIPs;
   }
 
 }

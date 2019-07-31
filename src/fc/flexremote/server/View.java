@@ -13,12 +13,11 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
-import javafx.scene.layout.Pane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
@@ -27,8 +26,10 @@ public class View {
   private View view;
   private Stage stage;
   private Scene scene;
-  private VBox vbox;
-  private Label localIP;
+  private HBox hBox;
+  private VBox vBoxLeft;
+  private VBox vBoxRight;
+  private Label localIPs;
   private Label instruction;
   private TextArea logView;
   private Button clearLogView;
@@ -45,17 +46,21 @@ public class View {
       this.stage = stage;
       stage.getIcons().add(new javafx.scene.image.Image("/tray_icon.png"));
       firstTimeMinimize = true;
-      initializeVBox();
+      initializeHBox();
+      initializeVBoxLeft();
+      initializeVBoxRight();
       initializeLocalIPLabel();
       initializeInstructionLabel();
       initializeLogView();
       initializeClearTextButton();
-      addChildrenToRoot(localIP);
-      addChildrenToRoot(instruction);
-      addChildrenToRoot(logView);
-      addChildrenToRoot(clearLogView);
-      scene = new Scene(getRoot());
-      stage.setTitle("Remote PC server");
+      hBox.getChildren().add(vBoxLeft);
+      hBox.getChildren().add(vBoxRight);
+      vBoxLeft.getChildren().add(localIPs);
+      vBoxRight.getChildren().add(instruction);
+      vBoxRight.getChildren().add(logView);
+      vBoxRight.getChildren().add(clearLogView);
+      scene = new Scene(hBox);
+      stage.setTitle("FlexRemote server");
       stage.setResizable(false);
       stage.setScene(scene);
       setupTrayIcon(stage);
@@ -67,12 +72,8 @@ public class View {
     return stage;
   }
 
-  public Pane getRoot() {
-    return vbox;
-  }
-
   public Label getLocalIPLabel() {
-    return localIP;
+    return localIPs;
   }
 
   public TextArea getLogView() {
@@ -82,27 +83,45 @@ public class View {
   public Button getClearLogViewButton() {
     return clearLogView;
   }
-
-  private void initializeVBox() {
-    vbox = new VBox();
-    vbox.setAlignment(Pos.TOP_CENTER);
-    vbox.setPadding(new Insets(10));
-    vbox.setSpacing(8);
+  
+  private void initializeHBox() {
+	  hBox = new HBox();
+	  hBox.setPadding(new Insets(10));
+	  hBox.setSpacing(8);
+  }
+  
+  private void initializeVBoxLeft() {
+	vBoxLeft = new VBox();
+	vBoxLeft.setAlignment(Pos.TOP_CENTER);
+	vBoxLeft.setPadding(new Insets(10));
+	vBoxLeft.setSpacing(8);
   }
 
-  private void addChildrenToRoot(Node child) {
-    this.getRoot().getChildren().add(child);
+  private void initializeVBoxRight() {
+    vBoxRight = new VBox();
+    vBoxRight.setAlignment(Pos.TOP_CENTER);
+    vBoxRight.setPadding(new Insets(10));
+    vBoxRight.setSpacing(8);
   }
 
   private void initializeLocalIPLabel() {
-    localIP = new Label();
-    localIP.setText("Local IP of this PC: -");
+    localIPs = new Label();
+    localIPs.setText("Local IP of this PC:");
+    localIPs.setPrefWidth(150);
   }
 
   private void initializeInstructionLabel() {
     instruction = new Label();
-    instruction.setText("1. Enter the IP shown above at the setting page of the remote app\n"
-        + "2. Create a remote from the app and start the connection");
+    instruction.setText("Instruction:\n" +
+    					"1. Enter the IP shown on the left to the setting page of the app.\n\n" +
+    				    "2. If there are multiple IPs being shown, choose the one which associate to\n" +
+    				    "the Local area network (LAN) your mobile device is connected to.\n\n" +
+    				    "Example: Your PC is connected to two local networks:\n" + 
+    				    "(1) a router with IP 192.168.0.2 (wifi) + 192.168.0.3 (ethernet)\n" +
+    				    "(2) a mobile tethering hotspot with IP 192.168.34.86.\n" + 
+    				    "If your mobile device is connected to (2), you should enter 192.168.34.86 in your app.\n\n" +
+    					"3. Create a remote control from the app and start the connection.\n\n" + 
+    				    "Tips: Connect PC and mobile device through mobile tethering hotspot to avoid lag spike when using touchpad.");
   }
 
   private void initializeLogView() {
