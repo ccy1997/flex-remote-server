@@ -1,2 +1,2 @@
 # FlexRemote Server
-The PC server for the android application - FlexRemote
+The desktop server for the android application - FlexRemote
